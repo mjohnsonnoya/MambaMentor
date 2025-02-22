@@ -4,24 +4,45 @@ import SidePanel from "./components/SidePanel/SidePanel";
 import "./App.css";
 
 function App() {
-  // Just a placeholder for messages, or you might fetch from a server
+  // Keep your initial messages
   const [messages, setMessages] = useState([
     { id: 1, sender: "Annie", text: "How's your project going?" },
     { id: 2, sender: "Me", text: "Honestly kinda stuck rn..." },
   ]);
 
-  // Example: to handle sending new messages
+  // This will hold the draft message that goes into the ChatWindow's input
+  const [draftMessage, setDraftMessage] = useState("");
+
+  // If you want to store the conversation goal in the parent,
+  // you can also add this. Otherwise, you can store it in SidePanel alone.
+  const [conversationGoal, setConversationGoal] = useState("");
+
+  // Function to handle sending a new message
   const handleSendMessage = (newMessage) => {
-    setMessages([...messages, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
+  };
+
+  // Function to handle when a suggestion is clicked in SidePanel
+  const handleSuggestionClick = (text) => {
+    setDraftMessage(text);
   };
 
   return (
     <div className="app-container">
       {/* Left side: Chat window */}
-      <ChatWindow messages={messages} onSendMessage={handleSendMessage} />
-      
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSendMessage}
+        draftMessage={draftMessage}
+        setDraftMessage={setDraftMessage}
+      />
+
       {/* Right side: Rizz analysis / side panel */}
-      <SidePanel />
+      <SidePanel
+        onSuggestionClick={handleSuggestionClick}
+        conversationGoal={conversationGoal}
+        setConversationGoal={setConversationGoal}
+      />
     </div>
   );
 }
