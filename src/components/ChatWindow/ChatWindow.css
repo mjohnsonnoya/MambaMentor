@@ -36,26 +36,59 @@
   .chat-bubble {
     position: relative;
     max-width: 60%;
-    margin-bottom: 0.5rem;
-    padding: 0.75rem 1rem;
-    border-radius: 20px;
+    margin-bottom: 0rem;
+    padding: 0.10rem 0.40rem;
     font-size: 0.9rem;
     line-height: 1.4;
     word-wrap: break-word;
   }
   
+  /* The sender’s (yours) bubble */
   .my-bubble {
     align-self: flex-end;
-    background-color: #007aff;
+    background-color: #007aff; /* iMessage blue */
     color: #fff;
-    border-radius: 20px 20px 0 20px;
+    border-radius: 18px 18px 10px 18px; /* Adjust corners */
+    margin: 5px; /* Some spacing */
   }
   
+  /* The arrow (tail) for your bubble */
+  .my-bubble::after {
+    content: "";
+    position: absolute;
+    right: -8px; /* Move it out a bit to create the tail */
+    bottom: 8px; /* Align with bottom of bubble */
+    width: 0;
+    height: 0;
+    border: 8px solid transparent; /* Start with transparent “triangle” */
+    border-left-color: #007aff; /* Fill in the left side to match the bubble */
+    border-right: 0;
+    border-bottom: 0;
+  }
+  
+  /* The other person’s bubble */
   .their-bubble {
     align-self: flex-start;
-    background-color: #e5e5ea;
+    background-color: #e5e5ea; /* iMessage gray */
     color: #000;
+    border-radius: 18px 18px 18px 10px; /* Adjust corners */
+    margin: 5px; /* Some spacing */
   }
+  
+  /* The arrow (tail) for their bubble */
+  .their-bubble::after {
+    content: "";
+    position: absolute;
+    left: -8px;
+    bottom: 8px;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-right-color: #e5e5ea;
+    border-left: 0;
+    border-bottom: 0;
+  }
+  
   
   .chat-input {
     display: flex;
