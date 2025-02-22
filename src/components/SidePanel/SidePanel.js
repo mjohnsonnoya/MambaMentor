@@ -30,7 +30,6 @@ function SidePanel({
 
   // Refresh handler: clear current suggestions and send conversation data to backend
   const handleRefreshSuggestions = () => {
-    console.log("Refreshing suggestions...");
     // Immediately clear previous suggestions so that nothing is displayed
     setServerSuggestions([]);
     
@@ -40,17 +39,20 @@ function SidePanel({
       .map((msg) => `${msg.sender}: ${msg.text}`)
       .join("\n");
 
-    // Determine the desired style based on flirtiness
-    const style = flirtiness > 50 ? "flirty" : "funny";
-
-    console.log("Refreshing suggestions with conversation history:", formattedHistory);
-    console.log("Using style:", style);
+    console.log("Refreshing suggestions with data:", {
+      conversationHistory: formattedHistory,
+      conversationGoal: conversationGoal,
+      flirtiness: flirtiness,
+      humor: humor
+    });
 
     // Emit a socket event to request refreshed suggestions from the backend
     socket.emit("send_message", {
       conversation_id: "default", // Adjust conversation ID as needed
       text: formattedHistory,
-      style: style
+      goal: conversationGoal, // added conversation goal
+      flirtiness: flirtiness,           // added flirtiness level
+      humor: humor                      // added humor level
     });
   };
 
