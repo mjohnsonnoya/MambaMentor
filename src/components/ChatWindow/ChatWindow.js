@@ -1,20 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import "./ChatWindow.css";
 
-function ChatWindow({ messages, onSendMessage }) {
-  const [inputValue, setInputValue] = useState("");
-
+function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) {
+  
   const handleSend = () => {
-    if (!inputValue.trim()) return;
+    if (!draftMessage.trim()) return;
 
     const newMessage = {
       id: Date.now(),
       sender: "Me",
-      text: inputValue,
+      text: draftMessage,
     };
 
     onSendMessage(newMessage);
-    setInputValue("");
+    setDraftMessage("");
   };
 
   return (
@@ -30,7 +29,9 @@ function ChatWindow({ messages, onSendMessage }) {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`chat-bubble ${msg.sender === "Me" ? "my-bubble" : "their-bubble"}`}
+            className={`chat-bubble ${
+              msg.sender === "Me" ? "my-bubble" : "their-bubble"
+            }`}
           >
             <p>{msg.text}</p>
           </div>
@@ -41,8 +42,8 @@ function ChatWindow({ messages, onSendMessage }) {
         <input
           type="text"
           placeholder="Type your message…"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          value={draftMessage}
+          onChange={(e) => setDraftMessage(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleSend()}
         />
         <button onClick={handleSend}>Send</button>

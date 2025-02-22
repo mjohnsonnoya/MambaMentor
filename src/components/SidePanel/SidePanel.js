@@ -1,29 +1,104 @@
 import React from "react";
 import "./SidePanel.css";
 
-function SidePanel() {
+import brightImg from "../../assets/bright.jpg";
+import marcosImg from "../../assets/marcos.jpg";
+import henroImg from "../../assets/henro.jpg"
+
+function SidePanel({
+  onSuggestionClick,
+  conversationGoal,
+  setConversationGoal,
+}) {
+  // If you want to store the conversation goal only here, you could do:
+  // const [conversationGoal, setConversationGoal] = useState("");
+
+  // Example suggestions
+  const suggestions = [
+    "Hey, how about a quick break?",
+    "Maybe we should get some coffee?",
+    "Let's step away for a few minutes to recharge."
+  ];
+
+  const handleSuggestionClick = (text) => {
+    onSuggestionClick(text);
+  };
+
+  const handlePersonaClick = (personaName) => {
+    console.log("Persona clicked:", personaName);
+    // In the future, you might want to update suggestions
+    // or do something else based on persona.
+  };
+
   return (
     <div className="side-panel">
-      <h2>Social Stockfish v0.1</h2>
+      <h2>RizzBot</h2>
+
       <div className="analysis-section">
         <h3>Conversation Goal</h3>
-        <p>Get Annie to playfully suggest coffee as a break from hackathon stress without directly asking.</p>
+        <input
+          className="goal-input"
+          type="text"
+          placeholder="Enter your conversation goal..."
+          value={conversationGoal}
+          onChange={(e) => setConversationGoal(e.target.value)}
+        />
       </div>
 
       <div className="analysis-section">
-        <h3>Analysis</h3>
-        <p>Confidence Score: 0.82</p>
-        <p>Could definitely use those recs right about now…</p>
+        <h3>Suggestions</h3>
+        <div className="suggestions-container">
+          {suggestions.map((sugg, index) => (
+            <button
+              key={index}
+              className="suggestion-button"
+              onClick={() => handleSuggestionClick(sugg)}
+            >
+              {sugg}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="analysis-section">
-        <h3>Conversation State Exploration</h3>
-        <p>...some state diagram or fancy D3 chart goes here...</p>
-      </div>
+        <h3>Personas</h3>
+        <div className="personas-container">
+          <button
+            className="persona-button"
+            onClick={() => handlePersonaClick("Bright")}
+          >
+            <img
+              src={brightImg}
+              alt="Bright"
+              className="persona-image"
+            />
+            <div className="persona-name">Bright</div>
+          </button>
 
-      <div className="analysis-section">
-        <h3>Monte Carlo Evaluation</h3>
-        <p>...the probability of success is 73.4%...</p>
+          <button
+            className="persona-button"
+            onClick={() => handlePersonaClick("Marcos")}
+          >
+            <img
+              src={marcosImg}
+              alt="Marcos"
+              className="persona-image"
+            />
+            <div className="persona-name">Marcos</div>
+          </button>
+
+          <button
+            className="persona-button"
+            onClick={() => handlePersonaClick("Henry")}
+          >
+            <img
+              src={henroImg}
+              alt="Henry"
+              className="persona-image"
+            />
+            <div className="persona-name">Henry</div>
+          </button>
+        </div>
       </div>
     </div>
   );
