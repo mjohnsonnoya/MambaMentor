@@ -47,7 +47,7 @@ function SidePanel({
     });
 
     // Emit a socket event to request refreshed suggestions from the backend
-    socket.emit("send_message", {
+    socket.emit("request_suggestions", {
       conversation_id: "default", // Adjust conversation ID as needed
       text: formattedHistory,
       goal: conversationGoal, // added conversation goal
@@ -56,7 +56,7 @@ function SidePanel({
     });
   };
 
-  // Listen for server suggestions
+  // Listen for server new_suggestions
   useEffect(() => {
     const handleNewSuggestions = (data) => {
       if (data.suggestions) {
@@ -71,10 +71,10 @@ function SidePanel({
     };
 
     // Adjust the event name if your backend emits under a different name.
-    socket.on("new_message", handleNewSuggestions);
+    socket.on("new_suggestions", handleNewSuggestions);
 
     return () => {
-      socket.off("new_message", handleNewSuggestions);
+      socket.off("new_suggestions", handleNewSuggestions);
     };
   }, []);
 

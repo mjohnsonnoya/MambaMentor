@@ -1,24 +1,23 @@
+// src/components/ChatWindow/ChatWindow.js
 import React from "react";
 import "./ChatWindow.css";
-import micIcon from '../../assets/microphone-solid.svg';
-
+import micIcon from "../../assets/microphone-solid.svg";
 
 function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) {
-  
   const handleSend = () => {
     if (!draftMessage.trim()) return;
-
     const newMessage = {
       id: Date.now(),
-      sender: "Me",
+      sender: "Me", // This is the user message.
       text: draftMessage,
     };
-
+    console.log("Sending user message:", newMessage);
     onSendMessage(newMessage);
     setDraftMessage("");
   };
+
   const handleDictation = () => {
-    alert("Start dictation… (this is a placeholder)"); // Replace with actual logic
+    alert("Start dictation… (this is a placeholder)");
   };
 
   return (
@@ -31,16 +30,15 @@ function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) 
       </div>
 
       <div className="chat-messages">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`chat-bubble ${
-              msg.sender === "Me" ? "my-bubble" : "their-bubble"
-            }`}
-          >
-            <p>{msg.text}</p>
-          </div>
-        ))}
+        {messages.map((msg) => {
+          // CHANGED: Use "my-bubble" for user messages, "their-bubble" for AI (Other) messages.
+          const bubbleClass = msg.sender === "Me" ? "my-bubble" : "their-bubble";
+          return (
+            <div key={msg.id} className={`chat-bubble ${bubbleClass}`}>
+              <p>{msg.text}</p>
+            </div>
+          );
+        })}
       </div>
 
       <div className="chat-input">
