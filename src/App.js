@@ -42,6 +42,7 @@ function App() {
         onSuggestionClick={handleSuggestionClick}
         conversationGoal={conversationGoal}
         setConversationGoal={setConversationGoal}
+        conversationHistory={messages}
       />
     </div>
   );
