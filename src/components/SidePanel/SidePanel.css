@@ -1,0 +1,15 @@
+.side-panel {
+    flex: 1; /* takes up ~1/3 of the screen */
+    background-color: #fafafa;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+  
+  .analysis-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .analysis-section h3 {
+    margin-bottom: 0.5rem;
+  }
+  
