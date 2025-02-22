@@ -99,9 +99,6 @@ def handle_suggestions(data):
         'suggestions': suggestions,
     })
     
-    # Optionally, you can auto-refresh suggestions after a new message:
-    refresh_suggestions_for_convo(conversation_id)
-    
     print("\n" + "-" * 50)
     print(f"Suggestions sent:\n\n{suggestions}")
     print("-" * 50 + "\n")
@@ -111,9 +108,6 @@ def handle_message(data):
     print("Received message:", data)
     conversation_id = data.get('conversation_id', 'default')
     user_text = data.get('text', '')
-    conversation_goal = data.get('goal', 'Connect with the other person')
-    flirtiness = data.get('flirtiness', 50)
-    humor = data.get('humor', 50)
     
     # CHANGED: Store the user message with sender "Me"
     timestamp = datetime.now().isoformat()
@@ -140,41 +134,11 @@ def handle_message(data):
     }
     conversations[conversation_id].append(ai_msg)
     
-    # Emit both the user message and the AI reply
-    # if user_text:
-    #     socketio.emit('new_message', {
-    #         'conversation_id': conversation_id,
-    #         'message': user_msg
-    #     })
+    # Broadcast the new AI reply
     socketio.emit('new_message', {
         'conversation_id': conversation_id,
         'message': ai_msg
     })
-    
-
-@socketio.on('refresh_suggestions')
-def refresh_suggestions_event(data):
-    conversation_id = data.get('conversation_id', 'default')
-    style = data.get('style', 'flirty')
-    refresh_suggestions_for_convo(conversation_id)
-
-def refresh_suggestions_for_convo(conversation_id):
-    if conversation_id in conversations:
-        formatted_history = format_conversation(conversations[conversation_id])
-    else:
-        formatted_history = ""
-    suggestions = generate_suggestions(formatted_history)
-    socketio.emit('new_suggestions', {
-        'conversation_id': conversation_id,
-        'suggestions': suggestions
-    })
-
-@app.route('/api/suggestions', methods=['POST'])
-def get_suggestions():
-    data = request.json or {}
-    conversation_history = data.get('history', "Other: Hi, how are you?\nYou: I'm doing well, how are you?\nOther: I'm doing well too.")
-    style = data.get('style', 'flirty')
-    return jsonify(generate_suggestions(conversation_history, style))
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5432, debug=True)
