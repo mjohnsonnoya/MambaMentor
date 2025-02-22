@@ -92,23 +92,41 @@
   
   .chat-input {
     display: flex;
+    align-items: center;
+    position: relative; /* allows the mic button to be positioned nicely */
     padding: 0.5rem;
     border-top: 1px solid #ddd;
+    background-color: #fafafa; /* light gray background similar to iMessage */
   }
   
   .chat-input input {
     flex: 1;
-    padding: 0.5rem;
+    border: none;
+    outline: none;
+    border-radius: 20px; /* iMessage-esque rounded corners */
+    background-color: #fff; /* white bubble feel */
+    border: 1px solid #ccc; 
+    padding: 0.5rem 1rem;
     font-size: 1rem;
-    margin-right: 0.5rem;
+    margin-right: 2.5rem; /* room for the mic button on the right */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* subtle depth */
   }
   
-  .chat-input button {
-    background-color: #007aff;
+  /* Position the mic button to float on the right side, just like in iOS */
+  .dictation-button {
+    position: absolute;
+    right: 1rem;
+    background: none;
     border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
+    padding: 0;
     cursor: pointer;
-    border-radius: 4px;
+    outline: none;
   }
+  
+  /* Adjust mic icon size if needed */
+  .dictation-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
   
