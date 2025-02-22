@@ -6,6 +6,9 @@ import openai
 import os
 import time
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configuration
 app = Flask(__name__)
@@ -17,14 +20,15 @@ conversations = {}
 
 # OpenAI configuration
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
 SYSTEM_PROMPT = """You are a conversation assistant specializing in generating flirty/funny responses. 
-Generate 3 suggestions matching the user's requested style. Keep responses under 100 characters.
-Format as: 1) ... 2) ... 3) ..."""
+Generate 1 suggestion matching the user's requested style. Keep responses under 100 characters.
+Format as a JSON file with one response."""
 
 def generate_suggestions(conversation_history, style="flirty"):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = openai.chat.completions.create(
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": f"Conversation history:\n{conversation_history}\n\nGenerate {style} responses:"}
@@ -37,13 +41,13 @@ def generate_suggestions(conversation_history, style="flirty"):
         print(f"OpenAI Error: {e}")
         return ["1) Let's talk about something else", "2) 😊", "3) How's your day going?"]
 
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected:', request.sid)
+# @socketio.on('connect')
+# def handle_connect():
+#     print('Client connected:', request.sid)
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected:', request.sid)
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     print('Client disconnected:', request.sid)
 
 @socketio.on('send_message')
 def handle_message(data):
@@ -79,12 +83,12 @@ def handle_message(data):
         'suggestions': suggestions
     })
 
-@app.route('/api/suggestions', methods=['POST'])
+# @app.route('/api/suggestions', methods=['POST'])
 def get_suggestions():
-    data = request.json
-    return jsonify({
-        'suggestions': generate_suggestions(data['history'], data.get('style', 'flirty'))
-    })
+    data = "Other: Hi, how are you?\nYou:I'm doing well, how are you?\nOther: I'm doing well too."
+    #request.json 
+    return generate_suggestions(data)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    # socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    print(get_suggestions())
