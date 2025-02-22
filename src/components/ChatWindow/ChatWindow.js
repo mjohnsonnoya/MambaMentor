@@ -1,5 +1,7 @@
 import React from "react";
 import "./ChatWindow.css";
+import micIcon from '../../assets/microphone-solid.svg';
+
 
 function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) {
   
@@ -15,12 +17,15 @@ function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) 
     onSendMessage(newMessage);
     setDraftMessage("");
   };
+  const handleDictation = () => {
+    alert("Start dictation… (this is a placeholder)"); // Replace with actual logic
+  };
 
   return (
     <div className="chat-window">
       <div className="chat-header">
         <div className="chat-user-info">
-          <div className="user-name">Annie</div>
+          <div className="user-name">John Pork</div>
           <div className="user-location">New York, NY</div>
         </div>
       </div>
@@ -46,7 +51,9 @@ function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) 
           onChange={(e) => setDraftMessage(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleSend()}
         />
-        <button onClick={handleSend}>Send</button>
+        <button onClick={handleDictation} className="dictation-button">
+          <img src={micIcon} alt="Mic" className="dictation-icon" />
+        </button>
       </div>
     </div>
   );
