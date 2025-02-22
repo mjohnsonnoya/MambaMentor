@@ -20,7 +20,7 @@ function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) 
     <div className="chat-window">
       <div className="chat-header">
         <div className="chat-user-info">
-          <div className="user-name">Annie</div>
+          <div className="user-name">John Pork</div>
           <div className="user-location">New York, NY</div>
         </div>
       </div>
