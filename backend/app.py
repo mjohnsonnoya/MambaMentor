@@ -38,7 +38,7 @@ def generate_ai_response(conversation_history_str):
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a friendly chat partner. Keep your reply short."},
+                {"role": "system", "content": "You are a friendly chat partner. Reply as the other person without using any speaker prefixes or labels, just give a natural reply."},
                 {"role": "user", "content": f"Conversation so far:\n{conversation_history_str}\nNow, reply as the other person:"}
             ],
             temperature=0.7,
@@ -141,11 +141,11 @@ def handle_message(data):
     conversations[conversation_id].append(ai_msg)
     
     # Emit both the user message and the AI reply
-    if user_text:
-        socketio.emit('new_message', {
-            'conversation_id': conversation_id,
-            'message': user_msg
-        })
+    # if user_text:
+    #     socketio.emit('new_message', {
+    #         'conversation_id': conversation_id,
+    #         'message': user_msg
+    #     })
     socketio.emit('new_message', {
         'conversation_id': conversation_id,
         'message': ai_msg
