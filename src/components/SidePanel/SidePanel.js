@@ -27,7 +27,7 @@ function SidePanel({
     console.log("Persona clicked:", personaName);
     // Future logic for persona-based suggestions can be added here.
   };
-
+  
   // Refresh handler: clear current suggestions and send conversation data to backend
   const handleRefreshSuggestions = () => {
     // Immediately clear previous suggestions so that nothing is displayed
@@ -55,6 +55,15 @@ function SidePanel({
       humor: humor                      // added humor level
     });
   };
+
+  // Listen for conversation history changes and refresh suggestions accordingly
+  useEffect(() => {
+    // Only refresh if there is at least one message.
+    if (conversationHistory.length > 0) {
+      handleRefreshSuggestions();
+    }
+  }, [conversationHistory]);
+  
 
   // Listen for server new_suggestions
   useEffect(() => {
