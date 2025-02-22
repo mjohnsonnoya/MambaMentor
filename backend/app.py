@@ -30,13 +30,13 @@ SYSTEM_PROMPT = """You are a conversation assistant specializing in generating f
 Generate 1 suggestion matching the user's requested style. Keep responses under 100 characters.
 Format as 3 sentences, seperated by newline."""
 
-def generate_suggestions(conversation_history, style="flirty"):
+def generate_suggestions(prompt, style="flirty"):
     try:
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Conversation history:\n{conversation_history}\n\nGenerate {style} responses:"}
+                {"role": "user", "content": f"Conversation history:\n{prompt}\n\nGenerate {style} responses:"}
             ],
             temperature=0.7,
             max_tokens=150
@@ -55,27 +55,29 @@ def format_conversation(convo_array):
 def handle_message(data):
     print("Received message:", data)
     conversation_id = data.get('conversation_id', 'default')
-    user_message = data['text']
-    style = data.get('style', 'flirty')
+    conversation_history = data.get('text', 'No messages yet!')
+    conversation_goal = data.get('goal', 'Connect with the other person')
+    flirtiness = data.get('flirtiness', 50)
+    humor = data.get('humor', 50)
+    suggestions = ""
     
-    logging.info(f"Received message for conversation {conversation_id}: {user_message}")
-    
-    # Create a message record with a timestamp
-    # timestamp = datetime.now().isoformat()
-    # message_data = {
-    #     'id': str(time.time_ns()),
-    #     'sender': 'user',
-    #     'text': user_message,
-    #     'timestamp': timestamp
-    # }
-    
-    # Store the message in the conversation history
-    # if conversation_id not in conversations:
-    #     conversations[conversation_id] = []
-    # conversations[conversation_id].append(message_data)
-    
-    # Get suggestions
-    suggestions = generate_suggestions(user_message)
+    # Generate suggestions based on the conversation history and other settings
+    while suggestions.count('\n') < 2:
+        # Build a combined prompt string that includes all the context:
+        prompt = (
+            f"Conversation History:\n\n{conversation_history}\n\n"
+            f"Conversation Goal: {conversation_goal}\n"
+            f"Flirtiness Level: {flirtiness}/100\n"
+            f"Humor Level: {humor}/100\n"
+            "Based on the above, generate three suggestions (under 100 characters) to respond to the last message or continue the conversation. Seperate them with newlines.\n"
+        )
+        
+        print("\n" + "-" * 50)
+        print("Prompt for OpenAI:", prompt[:-1])
+        print("-" * 50 + "\n")
+        
+        # Get suggestions
+        suggestions = generate_suggestions(prompt)
     
     # Broadcast the new message
     socketio.emit('new_message', {
@@ -83,18 +85,20 @@ def handle_message(data):
     })
     
     # Optionally, you can auto-refresh suggestions after a new message:
-    refresh_suggestions_for_convo(conversation_id, style)
+    refresh_suggestions_for_convo(conversation_id)
     
-    print("Suggestions sent:", suggestions)
+    print("\n" + "-" * 50)
+    print(f"Suggestions sent:\n\n{suggestions}")
+    print("-" * 50 + "\n")
 
 @socketio.on('refresh_suggestions')
 def refresh_suggestions_event(data):
     # When refresh button is pressed, data may contain conversation_id and style
     conversation_id = data.get('conversation_id', 'default')
     style = data.get('style', 'flirty')
-    refresh_suggestions_for_convo(conversation_id, style)
+    refresh_suggestions_for_convo(conversation_id)
 
-def refresh_suggestions_for_convo(conversation_id, style):
+def refresh_suggestions_for_convo(conversation_id):
     # Use the entire conversation history or a subset (e.g., last 5 messages)
     if conversation_id in conversations:
         # For richer context, you might want to use all messages or the last N messages.
@@ -103,7 +107,7 @@ def refresh_suggestions_for_convo(conversation_id, style):
     else:
         formatted_history = ""
     
-    suggestions = generate_suggestions(formatted_history, style)
+    suggestions = generate_suggestions(formatted_history)
     
     # Emit the new suggestions back to the client
     socketio.emit('new_suggestions', {
