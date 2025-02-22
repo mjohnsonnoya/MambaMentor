@@ -19,6 +19,7 @@
 .env.production.local
 backend/.env
 env_name
+venv
 
 npm-debug.log*
 yarn-debug.log*

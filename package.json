@@ -10,9 +10,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "^3.0.1",
+    "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "start-backend": "python backend/app.py",
     "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
