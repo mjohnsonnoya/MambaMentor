@@ -32,6 +32,9 @@ function App() {
 
   // ADDED: When sending a message, emit it to the backend instead of simply updating local state
   const handleSendMessage = (newMessage) => {
+
+    setMessages((prev) => [...prev, newMessage]);
+    
     socket.emit("send_message", {
       conversation_id: "default",
       text: newMessage.text,
