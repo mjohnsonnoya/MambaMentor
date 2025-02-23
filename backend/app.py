@@ -49,18 +49,30 @@ def generate_ai_response(conversation_history_str):
         print(f"OpenAI Error (single reply): {e}")
         return "Sorry, I'm a bit tongue-tied."
 
-def generate_suggestions(prompt, style="flirty"):
+def generate_suggestions(requestId, prompt):
     try:
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Conversation history:\n{prompt}\n\nGenerate {style} responses:"}
+                {"role": "user", "content": f"{prompt}"}
             ],
             temperature=0.7,
-            max_tokens=150
+            max_tokens=150,
+            stream=True
         )
-        return response.choices[0].message.content
+        
+        suggestions = ""
+        for chunk in response:
+            # Extract the new token from the chunk
+            token = chunk.choices[0].delta.content
+            if token:
+                suggestions += token
+                socketio.emit('new_suggestions', {
+                    'suggestions': suggestions,
+                    'requestId': requestId,
+                })
+        return suggestions
     except Exception as e:
         print(f"OpenAI Error: {e}")
         return '{"suggestions": ["1) Let\'s talk about something else", "2) 😊", "3) How\'s your day going?"]}'
@@ -77,31 +89,25 @@ def handle_suggestions(data):
 
     if len(conversation_history) == 0:
         conversation_history = "No conversation history yet."
-    suggestions = ""
+    
+    # Build a combined prompt string that includes all the context:
+    prompt = (
+        f"Conversation History:\n\n{conversation_history}\n\n"
+        f"Conversation Goal: {conversation_goal}\n"
+        f"Flirtiness Level: {flirtiness}/100\n"
+        f"Humor Level: {humor}/100\n"
+        "Based on the above, generate three suggestions (under 100 characters) to respond to the last message or continue the conversation. Seperate them with newlines.\n"
+    )
+    
+    print("\n" + "-" * 50)
+    print("Prompt for OpenAI:", prompt[:-1])
+    print("-" * 50 + "\n")
     
     # Generate suggestions based on the conversation history and other settings
+    suggestions = ""
     while suggestions.count('\n') < 2:
-        # Build a combined prompt string that includes all the context:
-        prompt = (
-            f"Conversation History:\n\n{conversation_history}\n\n"
-            f"Conversation Goal: {conversation_goal}\n"
-            f"Flirtiness Level: {flirtiness}/100\n"
-            f"Humor Level: {humor}/100\n"
-            "Based on the above, generate three suggestions (under 100 characters) to respond to the last message or continue the conversation. Seperate them with newlines.\n"
-        )
-        
-        print("\n" + "-" * 50)
-        print("Prompt for OpenAI:", prompt[:-1])
-        print("-" * 50 + "\n")
-        
         # Get suggestions
-        suggestions = generate_suggestions(prompt)
-    
-    # Broadcast the new message
-    socketio.emit('new_suggestions', {
-        'suggestions': suggestions,
-        'requestId': requestId,
-    })
+        suggestions = generate_suggestions(requestId, prompt)
     
     print("\n" + "-" * 50)
     print(f"Suggestions sent:\n\n{suggestions}")
