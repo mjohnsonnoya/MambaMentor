@@ -81,8 +81,11 @@ def handle_suggestions(data):
     conversation_id = data.get('conversation_id', 'default')
     conversation_history = data.get('text', 'No messages yet!')
     conversation_goal = data.get('goal', 'Connect with the other person')
+    persona_transcript = data.get('personaTranscript', 'No personal transcript yet!')
     flirtiness = data.get('flirtiness', 50)
     humor = data.get('humor', 50)
+    professional = data.get('professional', 50)
+    wholesomeness = data.get('wholesomeness', 50)
     requestId = data.get('requestId', '-1')
 
     if len(conversation_history) == 0:
@@ -94,7 +97,10 @@ def handle_suggestions(data):
         f"Conversation Goal: {conversation_goal}\n"
         f"Flirtiness Level: {flirtiness}/100\n"
         f"Humor Level: {humor}/100\n"
-        "Based on the above, generate three suggestions (under 100 characters) to respond to the last message or continue the conversation. Seperate them with newlines.\n"
+        f"Professionalism Level: {professional}/100\n"
+        f"Wholesomeness Level: {wholesomeness}/100\n\n"
+        "Based on the above, generate three suggestions (under 100 characters) to respond to the last message or continue the conversation. For each level, 50/100 is average. Seperate them with newlines.\n"
+        f"{persona_transcript}"
     )
     
     print("\n" + "-" * 50)

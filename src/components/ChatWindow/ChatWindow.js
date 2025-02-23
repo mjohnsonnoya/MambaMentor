@@ -24,8 +24,8 @@ function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) 
     <div className="chat-window">
       <div className="chat-header">
         <div className="chat-user-info">
-          <div className="user-name">Margot Robbie</div>
-          <div className="user-location">Los Angeles, CA</div>
+          <div className="user-name">Tim Cook</div>
+          <div className="user-location">Cupertino, CA</div>
         </div>
       </div>
 
