@@ -12,9 +12,11 @@ function SidePanel({
   conversationHistory // passed from parent
 }) {
   // State to store suggestions from the backend
-  const [serverSuggestions, setServerSuggestions] = useState([]);
   const [humor, setHumor] = useState(50);
   const [flirtiness, setFlirtiness] = useState(50);
+  const [suggestionsArray, setSuggestionsArray] = useState([]);
+  const [buffer, setBuffer] = useState("");
+  const prevTextRef = useRef("");
 
   // Create a ref to store the current request id
   const requestIdRef = useRef(0);
@@ -32,8 +34,6 @@ function SidePanel({
   
   // Memoize the refresh handler so that its identity is stable
   const handleRefreshSuggestions = useCallback(() => {
-    setServerSuggestions([]);
-
     // Increment the request id
     requestIdRef.current++;
     const currentRequestId = requestIdRef.current;
@@ -77,18 +77,47 @@ function SidePanel({
   // Listen for new suggestions from the server
   useEffect(() => {
     const handleNewSuggestions = (data) => {
-      // Only update if the response's requestId matches the latest one.
-      if (data.requestId === requestIdRef.current && data.suggestions) {
-        console.log("Received valid suggestions from server:", data.suggestions);
-        const suggestionsArray = data.suggestions
-          .split("\n")
-          .filter((s) => s.trim() !== "");
-        setServerSuggestions(suggestionsArray);
+      if (data.requestId !== requestIdRef.current || !data.suggestions) return;
+  
+      // data.suggestions is the cumulative text.
+      const newCumulativeText = data.suggestions;
+      const prevText = prevTextRef.current;
+      let delta = "";
+  
+      if (newCumulativeText.startsWith(prevText)) {
+        // Extract only the newly appended text.
+        delta = newCumulativeText.slice(prevText.length);
       } else {
-        console.log("Discarding outdated suggestions");
+        // If something goes awry, reset.
+        delta = newCumulativeText;
+        setSuggestionsArray([]);
+        setBuffer("");
       }
+      // Update the reference to the full cumulative text.
+      prevTextRef.current = newCumulativeText;
+  
+      // Update the buffer and process complete lines.
+      setBuffer((prevBuffer) => {
+        const updatedBuffer = prevBuffer + delta;
+        // Split the updated buffer on newline.
+        const parts = updatedBuffer.split("\n");
+        // All parts except the last are complete suggestions.
+        const completeLines = parts.slice(0, -1)
+          .map((line) => line.trim())
+          .filter((line) => line !== "");
+        const incomplete = parts[parts.length - 1];
+  
+        // Append only new complete lines that are not already in suggestionsArray.
+        setSuggestionsArray((prevArray) => {
+          const newUniqueLines = completeLines.filter(line => !prevArray.includes(line));
+          return [...prevArray, ...newUniqueLines];
+        });
+        
+        // Return the incomplete part as the new buffer.
+        return incomplete;
+      });
     };
-
+  
     socket.on("new_suggestions", handleNewSuggestions);
     return () => {
       socket.off("new_suggestions", handleNewSuggestions);
@@ -116,21 +145,27 @@ function SidePanel({
             ⟳
           </button>
         </div>
+
         <div className="suggestions-container">
-          {serverSuggestions.length > 0 ? (
-            serverSuggestions.map((sugg, index) => (
-              <button
-                key={index}
-                className="suggestion-button"
-                onClick={() => handleSuggestionClick(sugg)}
-              >
-                {sugg}
-              </button>
-            ))
-          ) : (
-            <p style={{ visibility: "hidden" }}>No suggestions yet.</p>
+          {suggestionsArray.map((sugg, index) => (
+            <button
+              key={index}
+              className="suggestion-button"
+              onClick={() => handleSuggestionClick(sugg)}
+            >
+              {sugg}
+            </button>
+          ))}
+          {buffer && (
+            <button
+              className="suggestion-button"
+              onClick={() => handleSuggestionClick(buffer)}
+            >
+              {buffer}
+            </button>
           )}
         </div>
+
       </div>
 
       <div className="analysis-section">

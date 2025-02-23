@@ -3,3 +3,4 @@ Flask-CORS==4.0.1
 Flask-SocketIO==5.3.6
 openai
 python-dotenv==1.0.1
+whisperx
