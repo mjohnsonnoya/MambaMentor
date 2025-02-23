@@ -150,8 +150,8 @@ def handle_message(data):
     }
     conversations[conversation_id].append(ai_msg)
     
-    # Generate a delay between 2 and 6 seconds with the mode skewed towards 5
-    delay = random.triangular(2, 5, 5)
+    # Generate a delay for the AI response
+    delay = random.uniform(1, 3)
     time.sleep(delay)
     
     # Broadcast the new AI reply

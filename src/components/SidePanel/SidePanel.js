@@ -64,7 +64,7 @@ function SidePanel({
             console.log("Loaded Barack Obama transcript:", text);
           })
           .catch(error => console.error("Error loading transcript:", error));
-      } else if (personaName === "Robert Downey") {
+      } else if (personaName === "Iron Man") {
         fetch("/transcript_robert.txt")
           .then(response => response.text())
           .then(text => {
@@ -236,11 +236,11 @@ function SidePanel({
             <div className="persona-name">Jack Harlow</div>
           </button>
           <button
-            className={`persona-button ${selectedPersona === "Robert Downey" ? "selected-persona" : ""}`}
-            onClick={() => handlePersonaClick("Robert Downey")}
+            className={`persona-button ${selectedPersona === "Iron Man" ? "selected-persona" : ""}`}
+            onClick={() => handlePersonaClick("Iron Man")}
           >
-            <img src={robertImg} alt="Robert Downey" className="persona-image" />
-            <div className="persona-name">Robert Downey</div>
+            <img src={robertImg} alt="Iron Man" className="persona-image" />
+            <div className="persona-name">Iron Man</div>
           </button>
         </div>
       </div>
