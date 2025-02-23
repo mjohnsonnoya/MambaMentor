@@ -33,13 +33,11 @@
     flex-direction: column;
   }
   
-  .chat-bubble {
-    position: relative;
-    max-width: 60%;
-    margin-bottom: 0rem;
-    padding: 0rem 0.550rem;
-    font-size: 0.9rem;
-    line-height: 0.8;
+  .chat-bubble p {
+    margin: 0;
+    max-width: 30vw;
+    line-height: 1.4;
+    white-space: pre-wrap;
     word-wrap: break-word;
   }
   
@@ -50,6 +48,7 @@
     color: #fff;
     border-radius: 18px 18px 10px 18px; /* Adjust corners */
     margin: 5px; /* Some spacing */
+    padding: 0.45rem 0.6rem;
   }
   
   /* The arrow (tail) for your bubble */
@@ -73,6 +72,7 @@
     color: #000;
     border-radius: 18px 18px 18px 10px; /* Adjust corners */
     margin: 5px; /* Some spacing */
+    padding: 0.45rem 0.6rem;
   }
   
   /* The arrow (tail) for their bubble */

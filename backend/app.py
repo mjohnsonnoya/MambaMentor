@@ -41,7 +41,7 @@ def generate_ai_response(conversation_history_str):
                 {"role": "system", "content": "You are a friendly chat partner. Reply as the other person without using any speaker prefixes or labels, just give a natural reply."},
                 {"role": "user", "content": f"Conversation so far:\n{conversation_history_str}\nNow, reply as the other person:"}
             ],
-            temperature=0.7,
+            temperature=0.8,
             max_tokens=80
         )
         return response.choices[0].message.content.strip()

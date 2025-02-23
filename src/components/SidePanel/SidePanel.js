@@ -97,7 +97,7 @@ function SidePanel({
 
   return (
     <div className="side-panel">
-      <h2>RizzBot</h2>
+      <h2>The Rizzler</h2>
       <div className="analysis-section">
         <h3>Conversation Goal</h3>
         <input
