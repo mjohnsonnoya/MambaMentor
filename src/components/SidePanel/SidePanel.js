@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./SidePanel.css";
 import brightImg from "../../assets/bright.jpg";
 import marcosImg from "../../assets/marcos.jpg";
@@ -13,10 +13,12 @@ function SidePanel({
 }) {
   // State to store suggestions from the backend
   const [serverSuggestions, setServerSuggestions] = useState([]);
-
-  // Settings state
   const [humor, setHumor] = useState(50);
   const [flirtiness, setFlirtiness] = useState(50);
+
+  // Create a ref to store the current request id
+  const requestIdRef = useRef(0);
+  const initialRefreshDone = useRef(false);
 
   // When a suggestion is clicked, call the provided callback
   const handleSuggestionClick = (text) => {
@@ -28,12 +30,14 @@ function SidePanel({
     // Future logic for persona-based suggestions can be added here.
   };
   
-  // Refresh handler: clear current suggestions and send conversation data to backend
-  const handleRefreshSuggestions = () => {
-    // Immediately clear previous suggestions so that nothing is displayed
+  // Memoize the refresh handler so that its identity is stable
+  const handleRefreshSuggestions = useCallback(() => {
     setServerSuggestions([]);
+
+    // Increment the request id
+    requestIdRef.current++;
+    const currentRequestId = requestIdRef.current;
     
-    // Format the conversation history with a fallback if undefined
     const safeHistory = conversationHistory || [];
     const formattedHistory = safeHistory
       .map((msg) => `${msg.sender}: ${msg.text}`)
@@ -41,47 +45,51 @@ function SidePanel({
 
     console.log("Refreshing suggestions with data:", {
       conversationHistory: formattedHistory,
-      conversationGoal: conversationGoal,
-      flirtiness: flirtiness,
-      humor: humor
+      conversationGoal,
+      flirtiness,
+      humor,
+      currentRequestId
     });
 
-    // Emit a socket event to request refreshed suggestions from the backend
     socket.emit("request_suggestions", {
-      conversation_id: "default", // Adjust conversation ID as needed
+      conversation_id: "default",
       text: formattedHistory,
-      goal: conversationGoal, // added conversation goal
-      flirtiness: flirtiness,           // added flirtiness level
-      humor: humor                      // added humor level
+      goal: conversationGoal,
+      flirtiness,
+      humor,
+      requestId: currentRequestId
     });
-  };
+  }, [conversationHistory, conversationGoal, flirtiness, humor]);
 
-  // Listen for conversation history changes and refresh suggestions accordingly
   useEffect(() => {
-    // Only refresh if there is at least one message.
-    if (conversationHistory.length > 0) {
+    // If conversationHistory is empty and we haven't done the initial refresh:
+    if (conversationHistory.length === 0 && !initialRefreshDone.current) {
+      initialRefreshDone.current = true;
+      console.log("Page initialized with no conversation history.");
       handleRefreshSuggestions();
     }
-  }, [conversationHistory]);
-  
+    // For subsequent changes (when there is at least one message), always refresh:
+    else if (conversationHistory.length > 0) {
+      handleRefreshSuggestions();
+    }
+  }, [conversationHistory, handleRefreshSuggestions]);
 
-  // Listen for server new_suggestions
+  // Listen for new suggestions from the server
   useEffect(() => {
     const handleNewSuggestions = (data) => {
-      if (data.suggestions) {
-        console.log("Received suggestions from server:", data.suggestions);
-        // If your backend returns a string with newline-separated suggestions,
-        // split it into an array. Adjust as needed.
+      // Only update if the response's requestId matches the latest one.
+      if (data.requestId === requestIdRef.current && data.suggestions) {
+        console.log("Received valid suggestions from server:", data.suggestions);
         const suggestionsArray = data.suggestions
           .split("\n")
           .filter((s) => s.trim() !== "");
         setServerSuggestions(suggestionsArray);
+      } else {
+        console.log("Discarding outdated suggestions");
       }
     };
 
-    // Adjust the event name if your backend emits under a different name.
     socket.on("new_suggestions", handleNewSuggestions);
-
     return () => {
       socket.off("new_suggestions", handleNewSuggestions);
     };

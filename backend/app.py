@@ -73,7 +73,10 @@ def handle_suggestions(data):
     conversation_goal = data.get('goal', 'Connect with the other person')
     flirtiness = data.get('flirtiness', 50)
     humor = data.get('humor', 50)
+    requestId = data.get('requestId', '-1')
 
+    if len(conversation_history) == 0:
+        conversation_history = "No conversation history yet."
     suggestions = ""
     
     # Generate suggestions based on the conversation history and other settings
@@ -97,6 +100,7 @@ def handle_suggestions(data):
     # Broadcast the new message
     socketio.emit('new_suggestions', {
         'suggestions': suggestions,
+        'requestId': requestId,
     })
     
     print("\n" + "-" * 50)
