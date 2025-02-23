@@ -9,6 +9,8 @@ import time
 from datetime import datetime
 from dotenv import load_dotenv
 import logging
+import random
+import time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -36,7 +38,7 @@ def generate_ai_response(conversation_history_str):
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a friendly chat partner. Reply as the other person without using any speaker prefixes or labels, just give a natural reply."},
+                {"role": "system", "content": "You are a chat partner. Be conversational, move the conversation forward, and don't be too formal. Reply as the other person without using any speaker prefixes or labels, just give a natural reply, in under one sentence."},
                 {"role": "user", "content": f"Conversation so far:\n{conversation_history_str}\nNow, reply as the other person:"}
             ],
             temperature=0.8,
@@ -147,6 +149,10 @@ def handle_message(data):
         'timestamp': datetime.now().isoformat()
     }
     conversations[conversation_id].append(ai_msg)
+    
+    # Generate a delay between 2 and 6 seconds with the mode skewed towards 5
+    delay = random.triangular(2, 5, 5)
+    time.sleep(delay)
     
     # Broadcast the new AI reply
     socketio.emit('new_message', {

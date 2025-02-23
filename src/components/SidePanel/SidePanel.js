@@ -52,9 +52,34 @@ function SidePanel({
             console.log("Loaded Jack Harlow transcript:", text);
           })
           .catch(error => console.error("Error loading transcript:", error));
+      } else if (personaName === "Barack Obama") {
+        fetch("/transcript_obama.txt")
+          .then(response => response.text())
+          .then(text => {
+            setpersonaTranscript(
+              "Please response like you are Barack Obama. Here is a sample of Barack Obama's conversation with someone else for you to model off of:\n\n" +
+                text +
+                "\n\n"
+            );
+            console.log("Loaded Barack Obama transcript:", text);
+          })
+          .catch(error => console.error("Error loading transcript:", error));
+      } else if (personaName === "Robert Downey") {
+        fetch("/transcript_robert.txt")
+          .then(response => response.text())
+          .then(text => {
+            setpersonaTranscript(
+              "Please response like you are Robert Downey Jr. Here is a sample of Robert Downey Jr.'s conversation with someone else for you to model off of (he is person A):\n\n" +
+                text +
+                "\n\n"
+            );
+            console.log("Loaded Robert Downey transcript:", text);
+          })
+          .catch(error => console.error("Error loading transcript:", error));
       } else {
-        // For other personas, clear any transcript.
+        // If a different persona is selected, clear the transcript.
         setpersonaTranscript("");
+        console.log("Cleared persona transcript.");
       }
     }
   };
