@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./SidePanel.css";
 import brightImg from "../../assets/bright.jpg";
-import marcosImg from "../../assets/marcos.jpg";
 import henroImg from "../../assets/henro.jpg";
 import jackImg from "../../assets/jack.jpg"
 import { socket } from "../../socket"; // your Socket.IO client instance
-
 
 function SidePanel({
   onSuggestionClick,
@@ -18,6 +16,7 @@ function SidePanel({
   const [flirtiness, setFlirtiness] = useState(50);
   const [suggestionsArray, setSuggestionsArray] = useState([]);
   const [buffer, setBuffer] = useState("");
+  const [personaTranscript, setPersonaTranscript] = useState("");
   const prevTextRef = useRef("");
 
   // Create a ref to store the current request id
@@ -59,8 +58,12 @@ function SidePanel({
       .map((msg) => `${msg.sender}: ${msg.text}`)
       .join("\n");
 
+    const combinedText = personaTranscript
+      ? personaTranscript + "\n\n" + formattedHistory
+      : formattedHistory;
+
     console.log("Refreshing suggestions with data:", {
-      conversationHistory: formattedHistory,
+      conversationHistory: combinedText,
       conversationGoal,
       flirtiness,
       humor,
@@ -69,7 +72,7 @@ function SidePanel({
 
     socket.emit("request_suggestions", {
       conversation_id: "default",
-      text: formattedHistory,
+      text: combinedText,
       goal: conversationGoal,
       flirtiness,
       humor,
