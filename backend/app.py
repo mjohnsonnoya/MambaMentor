@@ -25,9 +25,7 @@ conversations = {}
 # OpenAI configuration
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-SYSTEM_PROMPT = """You are a conversation assistant specializing in generating flirty/funny responses. 
-Generate 1 suggestion matching the user's requested style. Keep responses under 100 characters.
-Format as 3 sentences, seperated by newline."""
+SYSTEM_PROMPT = """You are a conversation assistant specializing in assisting genuine day to day conversations. Please do not use any puns and, and you want to be more discreet with your intentions. Generate 3 suggestions, each under 100 character, matching the user's requested style, and seperate by newline."""
 
 def format_conversation(convo_array):
     return "\n".join([f"{msg['sender']}: {msg['text']}" for msg in convo_array])
@@ -57,7 +55,7 @@ def generate_suggestions(requestId, prompt):
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": f"{prompt}"}
             ],
-            temperature=0.7,
+            temperature=1.0,
             max_tokens=150,
             stream=True
         )
