@@ -36,7 +36,7 @@ function ChatWindow({ messages, onSendMessage, draftMessage, setDraftMessage }) 
           return (
             <div key={msg.id} className={`chat-bubble ${bubbleClass}`}>
               {/* <p style={{ lineHeight: "1.6", whiteSpace: "pre-wrap" }}>{msg.text}</p> */}
-              <p style={{ lineHeight: "1.2", whiteSpace: "pre-line" }}>
+              <p>
               {msg.text}
               </p>
             </div>
