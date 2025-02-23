@@ -3,7 +3,9 @@ import "./SidePanel.css";
 import brightImg from "../../assets/bright.jpg";
 import marcosImg from "../../assets/marcos.jpg";
 import henroImg from "../../assets/henro.jpg";
+import jackImg from "../../assets/jack.jpg"
 import { socket } from "../../socket"; // your Socket.IO client instance
+
 
 function SidePanel({
   onSuggestionClick,
@@ -29,8 +31,22 @@ function SidePanel({
 
   const handlePersonaClick = (personaName) => {
     console.log("Persona clicked:", personaName);
-    // Future logic for persona-based suggestions can be added here.
+    // If Jack Harlow is selected, fetch the transcript
+    if (personaName === "Jack Harlow") {
+      fetch("/transcript.txt")
+        .then(response => response.text())
+        .then(text => {
+          setPersonaTranscript(text);
+          console.log("Loaded Jack Harlow transcript:", text);
+        })
+        .catch(error => console.error("Error loading transcript:", error));
+    } else {
+      // For other personas, you might clear or set a different transcript
+      setPersonaTranscript("");
+    }
   };
+  
+  
   
   // Memoize the refresh handler so that its identity is stable
   const handleRefreshSuggestions = useCallback(() => {
@@ -175,9 +191,9 @@ function SidePanel({
             <img src={brightImg} alt="Bright" className="persona-image" />
             <div className="persona-name">Bright</div>
           </button>
-          <button className="persona-button" onClick={() => handlePersonaClick("Marcos")}>
-            <img src={marcosImg} alt="Marcos" className="persona-image" />
-            <div className="persona-name">Marcos</div>
+          <button className="persona-button" onClick={() => handlePersonaClick("Jack Harlow")}>
+            <img src={jackImg} alt="Jack Harlow" className="persona-image" />
+            <div className="persona-name">Jack</div>
           </button>
           <button className="persona-button" onClick={() => handlePersonaClick("Henry")}>
             <img src={henroImg} alt="Henry" className="persona-image" />
